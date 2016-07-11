@@ -1,0 +1,17 @@
+{
+    "name": "raventools/dbutils",
+    "description": "database and schema management utilities",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Phil Dier",
+            "email": "phil@raventools.com"
+        }
+    ],
+	"autoload": {
+		"psr-0": {
+			"RavenTools\\DbUtils": "src"
+		}
+	},
+    "require": {}
+}

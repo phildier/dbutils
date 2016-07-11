@@ -1,0 +1,12 @@
+.DS_Store
+cache
+.DS_Store
+vendor
+*.swp
+*.swo
+overrides.json
+.vagrant
+berks-cookbooks
+npm-debug.log
+node_modules
+*.sqlite
