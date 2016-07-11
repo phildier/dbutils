@@ -1,15 +1,32 @@
 #!/usr/bin/env php
 <?php
 
-require_once(__DIR__ . "/vendor/autoload.php");
+foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        define('DBUTIL_COMPOSER_AUTOLOAD', $file);
+        break;
+    }
+}
+
+if(defined('DBUTIL_COMPOSER_AUTOLOAD')) {
+	require_once(DBUTIL_COMPOSER_AUTOLOAD);
+}
 
 use RavenTools\DbUtils\Schema;
 use RavenTools\DbUtils\Server\Mysqld;
 use RavenTools\DbUtils\PdoClient;
 
+error_reporting(E_ALL ^ E_NOTICE);
+
 $command = $argv[1];
 
+$valid_commands = ["startdb","lint","bootstrap"];
+
 switch($command) {
+	default:
+		printf("usage: %s [%s]\n",$argv[0],implode("|",$valid_commands));
+		break;
+
 	case "startdb":
 		$db = new Mysqld;
 		$db->start();
