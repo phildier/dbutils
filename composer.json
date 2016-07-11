@@ -13,5 +13,8 @@
 			"RavenTools\\DbUtils": "src"
 		}
 	},
+	"bin": [
+		"dbutil"
+	],
     "require": {}
 }
