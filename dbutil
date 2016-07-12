@@ -2,10 +2,10 @@
 <?php
 
 foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php'] as $file) {
-    if (file_exists($file)) {
-        define('DBUTIL_COMPOSER_AUTOLOAD', $file);
-        break;
-    }
+	if (file_exists($file)) {
+		define('DBUTIL_COMPOSER_AUTOLOAD', $file);
+		break;
+	}
 }
 
 if(defined('DBUTIL_COMPOSER_AUTOLOAD')) {
@@ -39,11 +39,11 @@ switch($command) {
 		$server = new Mysqld;
 		$port = $server->start();
 
-        $db = PdoClient::get([
-            'host' => '127.0.0.1',
-            'port' => $port,
-            'user' => 'root'
-        ]);
+		$db = PdoClient::get([
+			'host' => '127.0.0.1',
+			'port' => $port,
+			'user' => 'root'
+		]);
 
 		$schema = new Schema([
 			'db' => $db,
@@ -81,7 +81,7 @@ switch($command) {
 			$config['dbname']
 		));
 
-        $db = PdoClient::get($config);
+		$db = PdoClient::get($config);
 
 		$schema = new Schema([
 			'db' => $db,
