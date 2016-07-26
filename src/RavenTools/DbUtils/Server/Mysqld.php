@@ -82,6 +82,7 @@ class Mysqld implements ServerInterface {
 
 		if(mkdir($path)) {
 			chmod($path,0777);
+			chown($path,"mysql");
 			return $path;
 		}
 
@@ -110,50 +111,51 @@ class Mysqld implements ServerInterface {
 		return true;
 	}
 
-    /**
-     * starts mysql daemon using given port and data path
-     */
-    private function startMysqld() {
+	/**
+	 * starts mysql daemon using given port and data path
+	 */
+	private function startMysqld() {
 
 		$port = $this->listen_port;
 		$path = $this->temporary_directory;
 
 		putenv('TZ=US/Eastern');
 
-        $cmd = [
+		$cmd = [
 			"exec",
 			$this->getMysqldPath(),
-            "--datadir={$path}",
-            "--socket={$path}/mysql.sock",
-            "--pid-file={$path}/mysqld.pid",
-            "--basedir=/usr",
-            "--port={$port}",
-            "--log-error={$path}/mysqld.log",
-            "--innodb",
-            "--innodb-log-file-size=5242880"
+			"--user=mysql",
+			"--datadir={$path}",
+			"--socket={$path}/mysql.sock",
+			"--pid-file={$path}/mysqld.pid",
+			"--basedir=/usr",
+			"--port={$port}",
+			"--log-error={$path}/mysqld.log",
+			"--innodb",
+			"--innodb-log-file-size=5242880"
 		];
 
 		$pipes = [];
-        $this->mysqld_handle = proc_open(
-            implode(" ",$cmd),
-            [["pipe","r"],["pipe","w"],["pipe","w"]],
-            $pipes,
-            $path // working dir
-        );
+		$this->mysqld_handle = proc_open(
+			implode(" ",$cmd),
+			[["pipe","r"],["pipe","w"],["pipe","w"]],
+			$pipes,
+			$path // working dir
+		);
 
 		stream_set_blocking($pipes[1],0);
 
-        if($this->mysqld_handle === false) {
-            throw new \Exception("failed starting mysqld");
-        }
+		if($this->mysqld_handle === false) {
+			throw new \Exception("failed starting mysqld");
+		}
 
 		$this->mysqld_pid = proc_get_status($this->mysqld_handle);
 
 		// give the daemon a second to start
 		sleep(5);
 
-        return true;
-    }
+		return true;
+	}
 
 	private function getMysqldPath() {
 
