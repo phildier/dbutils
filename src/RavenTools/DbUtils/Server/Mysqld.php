@@ -143,7 +143,7 @@ class Mysqld implements ServerInterface {
 		stream_set_blocking($pipes[1],0);
 
         if($this->mysqld_handle === false) {
-            throw new \Exception("failed starting crawler process");
+            throw new \Exception("failed starting mysqld");
         }
 
 		$this->mysqld_pid = proc_get_status($this->mysqld_handle);
