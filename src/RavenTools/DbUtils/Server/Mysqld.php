@@ -102,7 +102,7 @@ class Mysqld implements ServerInterface {
 
 		$install_db_path = $output[0];
 
-		$cmd = sprintf("%s --datadir=%s 2> /dev/null 1> /dev/null",$install_db_path,$this->temporary_directory);
+		$cmd = sprintf("%s --user=mysql --datadir=%s 2> /dev/null 1> /dev/null",$install_db_path,$this->temporary_directory);
 		exec($cmd,$output,$retval);
 		if($retval != 0) {
 			throw new \RuntimeException("failed to initialize test database");
