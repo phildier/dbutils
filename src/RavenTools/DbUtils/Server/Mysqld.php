@@ -121,7 +121,8 @@ class Mysqld implements ServerInterface {
 		putenv('TZ=US/Eastern');
 
         $cmd = [
-			"exec /usr/sbin/mysqld",
+			"exec",
+			$this->getMysqldPath(),
             "--datadir={$path}",
             "--socket={$path}/mysql.sock",
             "--pid-file={$path}/mysqld.pid",
@@ -153,5 +154,21 @@ class Mysqld implements ServerInterface {
 
         return true;
     }
+
+	private function getMysqldPath() {
+
+		$paths = [
+			"/usr/libexec/mysqld",
+			"/usr/sbin/mysqld"
+		];
+
+		foreach($paths as $path) {
+			if(file_exists($path)) {
+				return $path;
+			}
+		}
+
+		throw new \RuntimeException("could not find mysqld binary");
+	}
 
 }
