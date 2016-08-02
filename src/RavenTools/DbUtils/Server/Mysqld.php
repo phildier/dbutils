@@ -82,7 +82,7 @@ class Mysqld implements ServerInterface {
 
 		if(mkdir($path)) {
 			chmod($path,0777);
-			if(getmyuid() === 0) {
+			if(posix_getuid() === 0) {
 				chown($path,"mysql");
 			}
 			return $path;
@@ -104,7 +104,7 @@ class Mysqld implements ServerInterface {
 
 		$install_db_path = $output[0];
 
-		if(getmyuid() === 0) {
+		if(posix_getuid() === 0) {
 			$user = "--user=mysql";
 		}
 
@@ -130,7 +130,7 @@ class Mysqld implements ServerInterface {
 		$cmd = [
 			"exec",
 			$this->getMysqldPath(),
-			(getmyuid() === 0 ? "--user=mysql" : ""),
+			(posix_getuid() === 0 ? "--user=mysql" : ""),
 			"--datadir={$path}",
 			"--socket={$path}/mysql.sock",
 			"--pid-file={$path}/mysqld.pid",
