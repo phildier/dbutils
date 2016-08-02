@@ -46,7 +46,6 @@ class PdoClient {
 
 		if(!array_key_exists($name,self::$connections) || !is_object(self::$connections[$name])) {
 			$dsn = sprintf("mysql:host=%s;port=%s;dbname=%s",$host,$port,$dbname);
-			echo "$dsn\n";
 			self::$connections[$name] = new PDO($dsn,$user,$password);
 		}
 
