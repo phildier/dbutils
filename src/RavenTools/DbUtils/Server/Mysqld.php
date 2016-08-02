@@ -104,6 +104,7 @@ class Mysqld implements ServerInterface {
 
 		$install_db_path = $output[0];
 
+		$user = null;
 		if(posix_getuid() === 0) {
 			$user = "--user=mysql";
 		}
