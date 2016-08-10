@@ -6,6 +6,7 @@ class SqlObject {
 
 	private $name = null;
 	private $path = null;
+	private $db = null;
 
 	public function __construct($params = []) {
 
@@ -19,6 +20,12 @@ class SqlObject {
 			$this->setPath($params['path']);
 		} else {
 			throw new \RuntimeException("a valid path is required");
+		}
+	
+		if(array_key_exists('db',$params) && is_object($params['db'])) {
+			$this->setDb($params['db']);
+		} else {
+			throw new \RuntimeException("a valid db object is required");
 		}
 	}
 
@@ -36,6 +43,14 @@ class SqlObject {
 
 	public function getPath() {
 		return $this->path;
+	}
+
+	public function setDb($db) {
+		$this->db = $db;
+	}
+
+	public function getDb() {
+		return $this->db;
 	}
 
 	public function getSql() {

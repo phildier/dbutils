@@ -10,6 +10,9 @@ foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', 
 
 if(defined('DBUTIL_COMPOSER_AUTOLOAD')) {
 	require_once(DBUTIL_COMPOSER_AUTOLOAD);
+} else {
+	printf("you must run composer install first\n");
+	exit;
 }
 
 use RavenTools\DbUtils\Schema;
@@ -47,7 +50,10 @@ switch($command) {
 
 		$schema = new Schema([
 			'db' => $db,
-			'path' => $path
+			'path' => $path,
+			'table_params' => [
+				'truncate' => true
+			]
 		]);
 
 		if($schema->lint() === false) {

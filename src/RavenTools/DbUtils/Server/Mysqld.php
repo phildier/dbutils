@@ -96,23 +96,36 @@ class Mysqld implements ServerInterface {
 	 */
 	private function initializeDatabase() {
 
-		$cmd = "which mysql_install_db";
-		exec($cmd,$output,$retval);
-		if($retval != 0) {
-			throw new \RuntimeException("can't find mysql_install_db.  perhaps you need to install a mysql server?");
-		}
-
-		$install_db_path = $output[0];
-
 		$user = null;
 		if(posix_getuid() === 0) {
 			$user = "--user=mysql";
 		}
 
-		$cmd = sprintf("%s %s --datadir=%s 2> /dev/null 1> /dev/null",$install_db_path,$user,$this->temporary_directory);
+		putenv('TZ=US/Eastern');
+
+		$version = $this->getMysqlVersion();
+		if($version >= "5.7") {
+			// mysql_install_db is deprecated in 5.7 and greater, so use mysqld --initialize
+			$cmd = sprintf(
+				"%s %s --initialize-insecure --datadir=%s --log-error=%s/error.log",
+				$this->getMysqldPath(),
+				$user,
+				$this->temporary_directory,
+				$this->temporary_directory
+			);
+		} else {
+			// versions prior to 5.7 use mysql_install_db
+			$cmd = sprintf(
+				"%s %s --datadir=%s 2> /dev/null 1> /dev/null",
+				$this->getMysqlInstallDbPath(),
+				$user,
+				$this->temporary_directory
+			);
+		}
+
 		exec($cmd,$output,$retval);
 		if($retval != 0) {
-			throw new \RuntimeException("failed to initialize test database");
+			throw new \RuntimeException("failed to initialize test database ($retval)");
 		}
 
 		return true;
@@ -137,9 +150,7 @@ class Mysqld implements ServerInterface {
 			"--pid-file={$path}/mysqld.pid",
 			"--basedir=/usr",
 			"--port={$port}",
-			"--log-error={$path}/mysqld.log",
-			"--innodb",
-			"--innodb-log-file-size=5242880"
+			"--log-error={$path}/error.log"
 		];
 
 		$pipes = [];
@@ -180,4 +191,27 @@ class Mysqld implements ServerInterface {
 		throw new \RuntimeException("could not find mysqld binary");
 	}
 
+	private function getMysqlVersion() {
+
+		$cmd = "mysql -V";
+		exec($cmd,$output,$retval);
+
+		if($retval === 0) {
+			$matches = null;
+			preg_match('/ ([0-9]+\.[0-9]+)\.[0-9]+/',$output[0],$matches);
+			return $matches[1];
+		}
+
+		throw new \RuntimeException("missing mysql client");
+	}
+
+	private function getMysqlInstallDbPath() {
+		$cmd = "which mysql_install_db";
+		exec($cmd,$output,$retval);
+		if($retval === 0) {
+			return $output[0];
+		}
+
+		throw new \RuntimeException("can't find mysql_install_db.  perhaps you need to install a mysql server?");
+	}
 }
