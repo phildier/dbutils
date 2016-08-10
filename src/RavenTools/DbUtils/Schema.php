@@ -13,6 +13,8 @@ class Schema {
 	private $tables = null;
 	private $imports = null;
 
+	private $table_params = null;
+
 	public function __construct($params = []) {
 
 		if(array_key_exists('path',$params) && file_exists($params['path'])) {
@@ -26,6 +28,14 @@ class Schema {
 		} else {
 			throw new \InvalidArgumentException("a db object is required");
 		}
+
+		if(array_key_exists('table_params',$params) && is_array($params['table_params'])) {
+			$this->setTableParams($params['table_params']);
+		} 
+	}
+
+	public function setTableParams($params) {
+		$this->table_params = $params;
 	}
 
 	public function getPath() {
@@ -126,7 +136,7 @@ class Schema {
 	}
 
 	private function loadTables() {
-		$this->tables = $this->loadSql('Table','tables.json');
+		$this->tables = $this->loadSql('Table','tables.json',$this->table_params);
 	}
 
 	private function loadProcedures() {
@@ -137,7 +147,7 @@ class Schema {
 		$this->imports = $this->loadSql('Import','imports.json');
 	}
 
-	private function loadSql($class,$metadata) {
+	private function loadSql($class,$metadata,$params=[]) {
 
 		$path = sprintf("%s/%s",$this->getPath(),$metadata);
 
@@ -148,15 +158,16 @@ class Schema {
 		}
 
 		$ret = [];
+		
+		$params['db'] = $this->getDb();
 
 		foreach($objects as $object) {
 
 			$name = preg_replace("#^{$class}-(.*)\.sql$#i",'$1',$object);
 			$full_class = sprintf('RavenTools\\DbUtils\\%s',$class);
-			$ret[$name] = new $full_class([
-				'name' => $name,
-				'path' => sprintf("%s/%s",$this->getPath(),$object)
-			]);
+			$params['name'] = $name;
+			$params['path'] = sprintf("%s/%s",$this->getPath(),$object);
+			$ret[$name] = new $full_class($params);
 		}
 
 		return $ret;
