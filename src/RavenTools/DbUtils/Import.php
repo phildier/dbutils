@@ -29,6 +29,7 @@ class Import extends SqlObject {
 			}
 
 			$db = $this->getDb();
+			$queries = null;
 
 			foreach($data['rows'] as $row) {
 
