@@ -14,6 +14,13 @@ class Table extends SqlObject {
 	}
 
 	private function truncate() {
-		$this->getDb()->query(sprintf("TRUNCATE TABLE `%s`",$this->getName()));
+
+		$db = $this->getDb();
+		$name = $this->getName();
+
+		// if table exists, truncate it
+		if($db->query(sprintf("SHOW TABLES LIKE '%s'",$name))->rowCount() > 0) {
+			$db->query(sprintf("TRUNCATE TABLE `%s`",$name));
+		}
 	}
 }
