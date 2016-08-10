@@ -9,11 +9,20 @@ class Schema {
 	private $path = null;
 	private $db = null;
 
-	private $procedures = null;
-	private $tables = null;
-	private $imports = null;
+	private $tables = [];
+	private $procedures = [];
+	private $imports = [];
 
 	private $table_params = null;
+
+	// create tables by default
+	private $do_tables = true;
+
+	// create procedures by default
+	private $do_procedures = true;
+
+	// run data imports by default
+	private $do_imports = true;
 
 	public function __construct($params = []) {
 
@@ -31,6 +40,18 @@ class Schema {
 
 		if(array_key_exists('table_params',$params) && is_array($params['table_params'])) {
 			$this->setTableParams($params['table_params']);
+		} 
+
+		if(array_key_exists('do_tables',$params) && is_bool($params['do_tables'])) {
+			$this->do_tables = $params['do_tables'];
+		} 
+
+		if(array_key_exists('do_procedures',$params) && is_bool($params['do_procedures'])) {
+			$this->do_procedures = $params['do_procedures'];
+		} 
+
+		if(array_key_exists('do_imports',$params) && is_bool($params['do_imports'])) {
+			$this->do_imports = $params['do_imports'];
 		} 
 	}
 
@@ -60,7 +81,7 @@ class Schema {
 
 	public function getProcedures() {
 
-		if(is_null($this->procedures)) {
+		if(empty($this->procedures) && $this->do_procedures === true) {
 			$this->loadProcedures();
 		}
 
@@ -69,7 +90,7 @@ class Schema {
 
 	public function getTables() {
 
-		if(is_null($this->tables)) {
+		if(empty($this->tables) && $this->do_tables === true) {
 			$this->loadTables();
 		}
 
@@ -78,7 +99,7 @@ class Schema {
 
 	public function getImports() {
 
-		if(is_null($this->imports)) {
+		if(empty($this->imports) && $this->do_imports === true) {
 			$this->loadImports();
 		}
 
