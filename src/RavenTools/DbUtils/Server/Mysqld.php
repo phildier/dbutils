@@ -150,8 +150,7 @@ class Mysqld implements ServerInterface {
 			"--pid-file={$path}/mysqld.pid",
 			"--basedir=/usr",
 			"--port={$port}",
-			"--log-error={$path}/error.log",
-			"--innodb-force-recovery=0"
+			"--log-error={$path}/error.log"
 		];
 
 		$pipes = [];
