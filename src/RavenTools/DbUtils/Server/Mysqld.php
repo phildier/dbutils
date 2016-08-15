@@ -28,6 +28,7 @@ class Mysqld implements ServerInterface {
 		$this->temporary_directory = $this->createTemporaryDirectory();
 		$this->initializeDatabase();
 		$this->startMysqld();
+		$this->initializeTimezones();
 
 		return $this->listen_port;
 	}
@@ -206,6 +207,7 @@ class Mysqld implements ServerInterface {
 	}
 
 	private function getMysqlInstallDbPath() {
+
 		$cmd = "which mysql_install_db";
 		exec($cmd,$output,$retval);
 		if($retval === 0) {
@@ -213,5 +215,19 @@ class Mysqld implements ServerInterface {
 		}
 
 		throw new \RuntimeException("can't find mysql_install_db.  perhaps you need to install a mysql server?");
+	}
+
+	private function initializeTimezones() {
+
+		$cmd = sprintf(
+			"mysql_tzinfo_to_sql /usr/share/zoneinfo 2>/dev/null | mysql -h 127.0.0.1 -u root -P %s mysql",
+			$this->listen_port
+		);
+		exec($cmd,$output,$retval);
+		if($retval === 0) {
+			return true;
+		}
+
+		throw new \RuntimeException("timezone import failed");
 	}
 }
