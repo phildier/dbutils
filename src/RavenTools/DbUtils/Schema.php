@@ -153,6 +153,10 @@ class Schema {
 		foreach($objects as $object) {
 			printf("creating: %s %s\n",get_class($object),$object->getName());
 			$response = $this->getDb()->exec($object->getSql());
+			if($response === false) {
+				$message = sprintf("%s ERROR %s (%s)\n",get_class($object),$object->getName(),$db->errorInfo()[2]);
+				throw new \RuntimeException($message);
+			}
 		}
 	}
 
