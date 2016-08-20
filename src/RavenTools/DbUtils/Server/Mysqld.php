@@ -54,6 +54,8 @@ class Mysqld implements ServerInterface {
 	 */
 	private function getFreePort() {
 
+		$tries = 0;
+
 		do {
 			$try = rand(self::$start_port,self::$end_port);
 			$cmd = sprintf("netstat -ln | grep ':%s '",$try);
@@ -170,8 +172,12 @@ class Mysqld implements ServerInterface {
 
 		$this->mysqld_pid = proc_get_status($this->mysqld_handle);
 
-		// give the daemon a second to start
-		sleep(5);
+		// wait until mysql has started
+		$cmd = sprintf(
+			"watch -n .1 -g grep 'ready for connections' %s/error.log",
+			$path
+		);
+		exec($cmd);
 
 		return true;
 	}
