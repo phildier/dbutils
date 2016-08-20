@@ -174,7 +174,7 @@ class Mysqld implements ServerInterface {
 
 		// wait until mysql has started
 		$cmd = sprintf(
-			'tail -s .1 -f %s/error.log | { sed "/ready for connections/ q" && kill $$ ;}',
+			'tail --retry -s .1 -f %s/error.log 2>/dev/null | { sed "/ready for connections/ q" && kill $$ ;}',
 			$path
 		);
 		exec($cmd);
