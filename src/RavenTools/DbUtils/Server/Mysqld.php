@@ -175,7 +175,7 @@ class Mysqld implements ServerInterface {
 		// wait until mysql has started
 		do {
 			$cmd = sprintf(
-				"grep 'ready for connections' %s/error.log",
+				"grep 'ready for connections' %s/error.log 2>/dev/null",
 				$path
 			);
 			exec($cmd,$output,$retval);
