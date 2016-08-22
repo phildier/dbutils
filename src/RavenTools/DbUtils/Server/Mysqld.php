@@ -173,11 +173,14 @@ class Mysqld implements ServerInterface {
 		$this->mysqld_pid = proc_get_status($this->mysqld_handle);
 
 		// wait until mysql has started
-		$cmd = sprintf(
-			'tail --retry -s .1 -f %s/error.log 2>/dev/null | { sed "/ready for connections/ q" && kill $$ ;}',
-			$path
-		);
-		exec($cmd);
+		do {
+			$cmd = sprintf(
+				"grep 'ready for connections' %s/error.log",
+				$path
+			);
+			exec($cmd,$output,$retval);
+			usleep(0.1);
+		} while($retval != 0);
 
 		return true;
 	}
