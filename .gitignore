@@ -4,6 +4,7 @@ cache
 vendor
 *.swp
 *.swo
+*.un~
 overrides.json
 .vagrant
 berks-cookbooks

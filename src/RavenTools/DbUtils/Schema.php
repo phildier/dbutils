@@ -194,7 +194,7 @@ class Schema {
 			$full_class = sprintf('RavenTools\\DbUtils\\%s',$class);
 			$params['name'] = $name;
 			$params['path'] = sprintf("%s/%s",$this->getPath(),$object);
-			$ret[$name] = new $full_class($params);
+			$ret[$object] = new $full_class($params);
 		}
 
 		return $ret;
